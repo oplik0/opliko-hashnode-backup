@@ -1,6 +1,6 @@
 ## Polish ESCS Qualifications 2021 - login system
 
-While unfortunately I haven't managed to do a lot during the CTF (having different plans for the weekend didn't help when I picked apparently the second hardest challenge [judging by number of solves] after the few easiest ones :), I thought it's a good opportunity to start this blog. So this will be the first in probably 3 posts - the others covering *Back to school* and *NFC Init* challenges. So let's start.
+While unfortunately I haven't managed to do a lot during the CTF (having different plans for the weekend didn't help when I picked apparently the second hardest challenge [judging by number of solves] after the few easiest ones :), I thought it's a good opportunity to start this blog.
 
 # About the task
 
