@@ -6,18 +6,18 @@
 
 You Only Have One Chance is the first and the easiest (after the sanity check that was Bonjour) of smart contract challenges in this edition of SEETF.
 
-#### Challenge Description:
+#### Challenge description:
 > Sometimes in life, you only have one chance. Your goal is to make isSolved() function returns true!
 
 #### Author: AtlanticBase
 
-# setup
+# Setup
 
 The full guide to connecting to the environment can be found [here](https://github.com/Social-Engineering-Experts/ETH-Guide), but the TL;DR is that we need to install MetaMask, connect to the SEETF test network and create an account there, then get some funds via [their ETH faucet](http://awesome.chall.seetf.sg:40001/) and then finally connect to the challenge server with `nc` and following the steps there to deploy the contract.
 
 To interact with the network and edit the code I found it easiest to use the [Remix IDE](https://remix.ethereum.org/) in the browser.
 
-# what is our goal
+# What is our goal
 
 In all smart contract challenges the goal is getting `isSolved()` function of the deployed smart contract to return `true`. The full code can be retrieved from the SEETF server for this challenge:
 ```solidity
@@ -76,7 +76,7 @@ Yup, it's just public, and we can query it:
 So that problem is solved, we just need to increase the balance by 1337 minus whatever this value is.
 Now all that remains is actually exploiting a "bug" in this contract.
 
-# how to be small
+# How to be small
 
 The `increaseBalance` function has just three lines, with the last one doing what we need: increasing the balance by the value we provide. The issue are the first two: they are both checks against the sender.
 ```solidity
@@ -108,7 +108,7 @@ Well, let's actually look at the [top answer](https://ethereum.stackexchange.com
 
 So, we just need to call it from the constructor of a contract. This also explains the challenge name: a contract only gets one chance to exploit this one, since after it's created it will be blocked.
 
-# exploitation
+# Exploitation
 
 Let's quickly write a contract that will exploit this issue. I just added it to the end of the file, but you can of course be more fancy with imports etc.
 ```solidity
