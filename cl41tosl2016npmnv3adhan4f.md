@@ -4,7 +4,12 @@
 
 # Introduction
 
-You Only Have One Chance is the first and the easiest (after the sanity check that was Bonjour) of smart contract challenges in this edition of SEETF 
+You Only Have One Chance is the first and the easiest (after the sanity check that was Bonjour) of smart contract challenges in this edition of SEETF.
+
+#### Challenge Description:
+> Sometimes in life, you only have one chance. Your goal is to make isSolved() function returns true!
+
+#### Author: AtlanticBase
 
 # setup
 
