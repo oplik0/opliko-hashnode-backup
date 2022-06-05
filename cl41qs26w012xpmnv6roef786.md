@@ -2,13 +2,13 @@
 
 > This is a writeup for [SEETF 2022](https://play.seetf.sg/) which I participated in as a member of [DistributedLivelock](https://ctftime.org/team/187094) team. You can find my other writeups for this CTF [here](https://blog.opliko.dev/series/seetf-2022)
 
-## Introduction
+# Introduction
 
 Flag Portal is an interesting challange that was meant to be based on request smuggling through a reverse proxy, but due to misconfiguration of said proxy turned out to be quite a bit easier and a fixed version of the challange was released later.
 
 But first, some setup:
 
-## what are we looking at
+# what are we looking at
 
 The first thing we see after visiting the flag portal is a simple website that makes a request to an api to get the number of flags and displays it as text without even any styling:
 
@@ -38,7 +38,7 @@ services:
       - SECOND_FLAG=SEE{FAKE_FLAG}
 ```
 
-## frontend - the flagportal
+# frontend - the flagportal
 
 The source for flagportal is a simple ruby web server based on rack and puma, and even without knowing ruby it's quite simple to see what we have to do to get the first flag:
 ```ruby
@@ -72,7 +72,7 @@ However, when we try that, the endpoint simply returns a 403 error with the foll
 
 Well then, how about the api server, perhaps there is a way through there?
 
-## backend
+# backend
 
 On the backend we have a simple flask app with 4 endpoints, but it's quite easy to see that `/flag-plz` (or `/api/flag-plz`) is the endpoint we were looking for, and it's the one we saw the flagserver make requests to before.
 
@@ -106,7 +106,7 @@ Huh, what if we use `GET` then:
 
 Ah, that explains it. It's blocked somewhere. To get to the bottom of this we probably need to look at the proxy server then...
 
-## reverse proxy - Traffic Server
+# reverse proxy - Traffic Server
 
 Apache Traffic Server is an HTTP caching proxy server. In this challenge all it does is act as a reverse proxy and maps endpoints to specific services that aren't exposed. The `remap.config` file is quite easy to read:
 ```config
@@ -138,7 +138,7 @@ Well, look at that - we have an error message and as we checked earlier it seems
 
 Doesn't seem like it! So now all that's left is to get the servers to send us what we need.
 
-## exploiting the flaw
+# exploiting the flaw
 
 We'll need some publicly routable IP/domain on which we can listen to requests on - witch we can easily get by either using some virtual server or something like [`ngrok`]( https://ngrok.com/) that give us a tunnel with a public endpoint so that we can expose a service on our own PC. For the CTF I used the former, but since `ngrok` has a nice request inspector built in, let's use it here. Just run `ngrok http --scheme=http 0` (use `--scheme=http` because the CTF server doesn't speak TLS and upgrades break it too :) to get the endpoint and we can use the web GUI to inspect incoming requests. 
 
