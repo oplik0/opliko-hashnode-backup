@@ -6,6 +6,11 @@
 
 Bonjour is an introductory smart contract challenge that's just meant to check if you are able to use the system and interact with smart contracts.
 
+#### Challenge Description:
+> Welcome to SEETF! Get used to the environment.
+
+#### Author: AtlanticBase
+
 # setup
 
 The full guide to connecting to the environment can be found [here](https://github.com/Social-Engineering-Experts/ETH-Guide), but the TL;DR is that we need to install MetaMask, connect to the SEETF test network and create an account there, then get some funds via [their ETH faucet](http://awesome.chall.seetf.sg:40001/) and then finally connect to the challenge server with `nc` and following the steps there to deploy the contract.
