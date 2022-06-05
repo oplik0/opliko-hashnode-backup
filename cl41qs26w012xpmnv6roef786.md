@@ -13,7 +13,7 @@ Flag Portal is an interesting challange that was meant to be based on request sm
 
 > http://flagportal.chall.seetf.sg:10001
 
-#### Author: zeyu2001
+#### Challenge author: zeyu2001
 
 # What are we looking at
 
