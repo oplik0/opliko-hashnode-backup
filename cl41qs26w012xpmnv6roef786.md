@@ -1,6 +1,6 @@
 ## SEETF 2022 Flag Portal Writeup (unintended solution)
 
-#### This is a writeup for [SEETF 2022](https://play.seetf.sg/) which I participated in as a member of [DistributedLivelock](https://ctftime.org/team/187094) team
+> This is a writeup for [SEETF 2022](https://play.seetf.sg/) which I participated in as a member of [DistributedLivelock](https://ctftime.org/team/187094) team
 
 ## Introduction
 
