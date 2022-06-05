@@ -9,7 +9,7 @@ Bonjour is an introductory smart contract challenge that's just meant to check i
 #### Challenge Description:
 > Welcome to SEETF! Get used to the environment.
 
-#### Author: AtlanticBase
+#### Challenge author: AtlanticBase
 
 # Setup
 
