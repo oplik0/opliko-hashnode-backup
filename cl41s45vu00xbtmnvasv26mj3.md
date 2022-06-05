@@ -11,13 +11,13 @@ Bonjour is an introductory smart contract challenge that's just meant to check i
 
 #### Author: AtlanticBase
 
-# setup
+# Setup
 
 The full guide to connecting to the environment can be found [here](https://github.com/Social-Engineering-Experts/ETH-Guide), but the TL;DR is that we need to install MetaMask, connect to the SEETF test network and create an account there, then get some funds via [their ETH faucet](http://awesome.chall.seetf.sg:40001/) and then finally connect to the challenge server with `nc` and following the steps there to deploy the contract.
 
 To interact with the network and edit the code I found it easiest to use the [Remix IDE](https://remix.ethereum.org/) in the browser.
 
-# what is our goal
+# What is our goal
 
 In all smart contract challenges the goal is getting `isSolved()` function of the deployed smart contract to return `true`. In this case the conditions are easy to see when looking at the code:
 ```solidity
@@ -53,7 +53,7 @@ But well, this isn't time to complain about language design - let's get back to 
 What we now need it just contract address, which we are given after deployment:
 ![logs from contract deployment with address (0xe3a06E50dDbEeFEe8804C1a1f4934746E090ccA0) and transaction hash](https://cdn.hashnode.com/res/hashnode/image/upload/v1654461656272/iWiZE0wtR.png align="center")
 
-# solution
+# Solution
 
 And now we can use the Remix GUI to interact with it. Just remember to compile our contract and set the environment to "Injected web3". Paste the address into the box next to "At address" button and we get what we need:
 ![Part of Remix IDE GUI with an "at address" button next to which the contract address from the previous step was pasted and a deployed contracts tab, where we can see a Bonjour contract and all functions it exposes with their parameters as input boxes](https://cdn.hashnode.com/res/hashnode/image/upload/v1654461858384/3E58rHlhe.png align="center")
