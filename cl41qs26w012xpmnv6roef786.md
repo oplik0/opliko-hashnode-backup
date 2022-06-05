@@ -158,3 +158,5 @@ And check back on ngrok:
 ![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654458912728/0UB3xXH-D.png align="center")
 
 Now just to decode the URL-encoded `%7` and `%21` to `{` and `}` respectively and we have our second flag!
+
+> This is a writeup for [SEETF 2022](https://play.seetf.sg/) which I participated in as a member of [DistributedLivelock](https://ctftime.org/team/187094) team. You can find my other writeups for this CTF [here](https://blog.opliko.dev/series/seetf-2022)
