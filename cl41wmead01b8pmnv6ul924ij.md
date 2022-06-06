@@ -1,4 +1,4 @@
-## SEETF 2022 Rolls Royce Writeup (unintended solution)
+## SEETF 2022 Rolls Royce Writeup
 
 > This is a writeup for [SEETF 2022](https://play.seetf.sg/) which I participated in as a member of [DistributedLivelock](https://ctftime.org/team/187094) team. You can find my other writeups for this CTF [here](https://blog.opliko.dev/series/seetf-2022)
 
