@@ -1,10 +1,12 @@
-## SEETF 2022 Rolls Royce Writeup
+## SEETF 2022 Rolls Royce Writeup (unintended solution)
 
 > This is a writeup for [SEETF 2022](https://play.seetf.sg/) which I participated in as a member of [DistributedLivelock](https://ctftime.org/team/187094) team. You can find my other writeups for this CTF [here](https://blog.opliko.dev/series/seetf-2022)
 
 # Introduction
 
 RollsRoyce is the smart contract challenge that received the least solves during the CTF and it's not hard to guess that it might have something to do with the fact it involves guessing and randomness. Or does it really?
+
+EDIT: this apparently was an unintended solution. I guess not having any experience with exploiting Solidity gave me a different perspective on this challenge :)
 
 #### Challenge description:
 > Let's have some fun and win some money and hopefully buy a Rolls-Royce!
