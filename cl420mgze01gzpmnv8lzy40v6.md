@@ -139,13 +139,13 @@ contract HostileTakeover {
 
 Let's try it then. First, let's ensure we're blocked by this filter in the first place. If you're using the VM, you'll need to select a different account than the one you used to deploy the contract.
 We can just run the `withdrawFunds` function with incorrect parameters - they don't matter yet anyway.
-![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654473327946/Vrycbsaix.png align="left")
+![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654473327946/Vrycbsaix.png align="center")
 Yup, seems like we need to be the owners.
 
 Let's call our takeover contract with the Safe address and our wallet as parameters:
-![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654473216376/X9ZEL5b0S.png align="left")
+![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654473216376/X9ZEL5b0S.png align="center")
 Now calling `withdrawFunds` gives us a different error, indicating we have become the owner.
-![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654473298887/BKQk8I4hi.png align="left")
+![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654473298887/BKQk8I4hi.png align="center")
 
 Now, the harder part: let's find the secrets!
 
@@ -168,7 +168,7 @@ So when creating a contract we're actually sending a transaction that contains s
 If you recall, when deploying the challenge contracts alongside the address we also get the transaction hash. This is enough to look up everything.
 
 Now, there are many ways of interacting with Ethereum blockchain. The simplest one here and the one I used during the CTF is just expanding MetaMask to a new tab and using the Chrome DevTools to call functions on `eth` object that it exposes. That way we have a REPL in which we can look for the data we need:
-![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654473877575/SCwcKAxK_.png align="left")
+![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654473877575/SCwcKAxK_.png align="center")
 
 But the issue here is that we only see the production data here. We can deploy our own contract there, but we still won't have the same debug capabilities and it'll be slow. So let's do it in Remix - we can simply write a js script and run `remix.exeCurrent()` in terminal to run it:
 ```js
@@ -183,7 +183,7 @@ async function findTransactionDetails(transactionHash) {
 
 findTransactionDetails("0x4e697d4e603b269971072b5e52af6f45dda98e6aa6f66289d1f83dbd1c93098c");
 ```
-![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654474283783/Q2l6knwWX.png align="left")
+![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654474283783/Q2l6knwWX.png align="center")
 
 And here we have the two things we want: the input and the block timestamp.
 
@@ -194,12 +194,12 @@ A quick search will ~~cause us great harm for later~~ yield an Ethereum input da
 We need the ABI of our contract, but we can get it from Remix by going to the compilation sidebar on the left and finding the button that will copy it to our clipboard.
 
 So now we just need to paste the ABI and input string and voilà, we get... Totally wrong results
-![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654474582873/wa1wSm7Ke.png align="left")
+![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654474582873/wa1wSm7Ke.png align="center")
 
 I'm sure this is some user error, but I don't know Ethereum or Solidity enough to understand what happened here. It took me far too long to notice, since I didn't think of using the VM at the time and was testing just the CTF contract.
 But here, you can see why I recommended using recognizable byte sequences.
 This specific contract was deployed on the VM with `0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` and `0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff` as the secret values, and they are quite easy to find in the input data:
-![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654474792893/oaU4qWOQx.png align="left")
+![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654474792893/oaU4qWOQx.png align="center")
 
 Yup, it's just the last 64 bytes of the input (or 128 characters due to hex encoding), divided evenly in half...
 
@@ -216,11 +216,11 @@ async function findTransactionDetails(transactionHash) {
 }
 ```
 And run it:
-![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654475761211/cYUg1yJVt.png align="left")
+![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654475761211/cYUg1yJVt.png align="center")
 
 
 So let's just make sure the `withdrawFunds` function works:
-![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654475886248/nNTv0609a.png align="left")
+![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654475886248/nNTv0609a.png align="center")
 
 Yup, seems fine. Now just move it to production
 
@@ -242,7 +242,7 @@ Putting these values into the call to `withdrawFunds` to try to withdraw 30 eth 
 And as we can see it worked.
 
 Now all that remains is grabbing the flag:
-![nc connection to server which returns the flag: `SEE{B10cKcH41n_I5_sUp3r_53cuRe!}` ](https://cdn.hashnode.com/res/hashnode/image/upload/v1654476458564/G9RkqSDKf.png align="left")
+![nc connection to server which returns the flag: `SEE{B10cKcH41n_I5_sUp3r_53cuRe!}` ](https://cdn.hashnode.com/res/hashnode/image/upload/v1654476458564/G9RkqSDKf.png align="center")
 
 
 
