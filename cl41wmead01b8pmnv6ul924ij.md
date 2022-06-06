@@ -455,7 +455,7 @@ contract CombinedExploit {
     }
 }
 ```
-Here, just calling `fullExploit` with our address (and 3 ether) will guess three flips correctly and withdraw everything using reentrance, then transfer that to us.
+Here, just calling `fullExploit` with our address (and 3 ether) will guess three flips correctly and withdraw everything using reentrance, then transfer that to us. All in a single contract :)
 
 
 
