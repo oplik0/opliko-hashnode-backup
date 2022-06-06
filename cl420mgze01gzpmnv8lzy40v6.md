@@ -21,7 +21,7 @@ The full guide to connecting to the environment can be found [here](https://gith
 
 To interact with the network and edit the code I found it easiest to use the [Remix IDE](https://remix.ethereum.org/) in the browser.
 
-While for Bojour running on production immediately was preferable, here I recommend starting off with a javascript VM that Remix even has selected by default, since everything will work faster and you can use the debugger to understand what's happening inside the EVM easily. Just compile the contract and deploy it there:
+While for Bonjour running on production immediately was preferable, here I recommend starting off with a javascript VM that Remix even has selected by default, since everything will work faster and you can use the debugger to understand what's happening inside the EVM easily. Just compile the contract and deploy it there:
 ![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654472980904/tzAazYF_2.png align="center")
 
 I recommend using recognizable sequences for the secret keys here - just repeating the same hex character 64 times works great.
